@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acbe16dbe146e8408b54b15c7f04713, type: 3}
+  m_Name: Black Pieces Creator
+  m_EditorClassIdentifier: 
+  pieces:
+  - prefab: {fileID: 114116518849997482, guid: fc3535432a552d1468c029c39279c0b2, type: 2}
+    sprite: {fileID: 21300022, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
+  - prefab: {fileID: 114116518849997482, guid: 86c75f0e380598b418ee5f272e7310cd, type: 2}
+    sprite: {fileID: 21300016, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
+  - prefab: {fileID: 114116518849997482, guid: 0590bb1f9e823e94c83f965c81950952, type: 2}
+    sprite: {fileID: 21300018, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
+  - prefab: {fileID: 114116518849997482, guid: b27ee547b909c504f8a8a1fe338a1ae9, type: 2}
+    sprite: {fileID: 21300020, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
+  - prefab: {fileID: 114116518849997482, guid: 20d30cae3e9d1b146b2ea1848d8316b6, type: 2}
+    sprite: {fileID: 21300014, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
+  - prefab: {fileID: 114116518849997482, guid: 8f950ebe62d658942bbecc2746149a9b, type: 2}
+    sprite: {fileID: 21300012, guid: 25930c461b4173d4894af567f8ed008e, type: 3}
