@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class LinearMovementBehavior : BaseBehavior 
 {
 	protected void AddMovesInDirection(Coordinates delta)

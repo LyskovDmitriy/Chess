@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6838d6b0ea04944acdea5e15d0fcaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 3
+  type: 4
 --- !u!114 &114236101048988704
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -65,6 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523ae8c02257dfa4a88aeb3ec25f648d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SendOnMoveNotification: 0
 --- !u!212 &212644928498725578
 SpriteRenderer:
   m_ObjectHideFlags: 1

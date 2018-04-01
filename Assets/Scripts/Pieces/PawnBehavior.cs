@@ -9,6 +9,7 @@ public class PawnBehavior : BaseBehavior
 
 	private Coordinates movementDirection;
 	private int startingY;
+	private int lastRowIndex;
 	private bool calculatedMovementData = false;
 
 
@@ -106,7 +107,11 @@ public class PawnBehavior : BaseBehavior
 			MovedTwoSquaresLastTurn = true;
 		}
 
-		//check if the pawn reached last row to transform into another piece
+		if (newCoordinates.y == lastRowIndex)
+		{
+			PiecePromoter.Instance.RequestPromotion(piece.HoldingPlayer, newCoordinates);
+			piece.Remove();
+		}
 	}
 
 
@@ -169,7 +174,17 @@ public class PawnBehavior : BaseBehavior
 	private void CalculateMovementData()
 	{
 		movementDirection = (piece.HoldingPlayer.Color == PieceColor.White) ? Coordinates.Up : Coordinates.Down;
-		startingY = (piece.HoldingPlayer.Color == PieceColor.White) ? 1 : 6;
+		if (piece.HoldingPlayer.Color == PieceColor.White)
+		{
+			startingY = 1;
+			lastRowIndex = 7;
+		}
+		else
+		{
+			startingY = 6;
+			lastRowIndex = 0;
+		}
+
 		calculatedMovementData = true;
 	}
 

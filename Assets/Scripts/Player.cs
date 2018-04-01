@@ -14,6 +14,12 @@ public class Player : MonoBehaviour
 	private CastlingController castlingController;
 
 
+	public void AddPiece(PieceType pieceToAdd, Coordinates coord)
+	{
+		SetPieceInfo(piecesCreator.CreatePiece(pieceToAdd), coord);
+	}
+
+
 	public bool MovesInCurrentTurn()
 	{
 		return (color == GameController.Instance.ColorToMove);

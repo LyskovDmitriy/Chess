@@ -45,43 +45,11 @@ public class InputController : MonoBehaviour
 
 			if (highlightedPiece == null)
 			{
-				Piece selectedPiece = CheckBoard.Instance[boardCoordinates];
-
-				if ((selectedPiece != null) && selectedPiece.HoldingPlayer.MovesInCurrentTurn() && selectedPiece.IsInteractive())
-				{
-					HighlightPiece(selectedPiece);
-				}
+				Case_NoHighlightedPiece(boardCoordinates);
 			}
 			else
 			{
-				if (CheckBoard.Instance.IsSquareEmpty(boardCoordinates))
-				{
-					if (highlightedPiece.CanMove(boardCoordinates))
-					{
-						Debug.Log("Move");
-						highlightedPiece.Move(boardCoordinates);
-					}
-					else
-					{
-						UnhighlightPiece();
-					}
-				}
-				else
-				{
-					Piece selectedPiece = CheckBoard.Instance[boardCoordinates];
-
-					if (selectedPiece.HoldingPlayer.MovesInCurrentTurn() && (selectedPiece != highlightedPiece) && selectedPiece.IsInteractive())
-					{
-						UnhighlightPiece();
-						HighlightPiece(selectedPiece);
-					}
-					else if ((highlightedPiece != null) && (highlightedPiece.IsEnemy(selectedPiece)) 
-						&& highlightedPiece.CanMove(boardCoordinates)) 
-					{
-						Debug.Log("Attack");
-						highlightedPiece.MoveAndAttack(boardCoordinates);
-					}
-				}
+				Case_ThereIsHighlightedPiece(boardCoordinates);
 			}
 		}
 		else
@@ -91,11 +59,64 @@ public class InputController : MonoBehaviour
 	}
 
 
+	private void Case_NoHighlightedPiece(Coordinates inputCoordinates)
+	{
+		Piece selectedPiece = CheckBoard.Instance[inputCoordinates];
+
+		if ((selectedPiece != null) && selectedPiece.HoldingPlayer.MovesInCurrentTurn() && selectedPiece.IsInteractive())
+		{
+			HighlightPiece(selectedPiece);
+		}
+	}
+
+
+	private void Case_ThereIsHighlightedPiece(Coordinates inputCoordinates)
+	{
+		if (CheckBoard.Instance.IsSquareEmpty(inputCoordinates))
+		{
+			Action_SelectEmptySquare(inputCoordinates);
+		}
+		else
+		{
+			Action_SelectOccupiedSquare(inputCoordinates);
+		}
+	}
+
+
+	private void Action_SelectEmptySquare(Coordinates inputCoordinates)
+	{
+		if (highlightedPiece.CanMove(inputCoordinates))
+		{
+			highlightedPiece.Move(inputCoordinates);
+		}
+		else
+		{
+			UnhighlightPiece();
+		}
+	}
+
+
+	private void Action_SelectOccupiedSquare(Coordinates inputCoordinates)
+	{
+		Piece selectedPiece = CheckBoard.Instance[inputCoordinates];
+
+		if (selectedPiece.HoldingPlayer.MovesInCurrentTurn() && (selectedPiece != highlightedPiece) && selectedPiece.IsInteractive())
+		{
+			UnhighlightPiece();
+			HighlightPiece(selectedPiece);
+		}
+		else if ((highlightedPiece != null) && (highlightedPiece.IsEnemy(selectedPiece)) 
+			&& highlightedPiece.CanMove(inputCoordinates)) 
+		{
+			highlightedPiece.MoveAndAttack(inputCoordinates);
+		}
+	}
+
+
 	private void HighlightPiece(Piece piece)
 	{
 		highlightedPiece = piece;
 		highlightedPiece.Highlight();
-		//highlight possible moves
 	}
 
 

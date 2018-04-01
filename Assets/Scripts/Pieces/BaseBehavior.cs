@@ -31,7 +31,10 @@ public class BaseBehavior : MonoBehaviour
 	}
 
 
-	public bool IsInteractive() { return availableMoves.Count > 0; }
+	public bool IsInteractive() 
+	{ 
+		return availableMoves.Count > 0;
+	}
 
 
 	public virtual void HighlightAvailableMoves()
