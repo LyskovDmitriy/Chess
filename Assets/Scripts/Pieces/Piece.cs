@@ -17,6 +17,13 @@ public class Piece : MonoBehaviour
 
 	public void Move(Coordinates newCoordinates)
 	{
+		MoveWithoutEndTurn(newCoordinates);
+		GameController.Instance.EndTurn();
+	}
+
+
+	public void MoveWithoutEndTurn(Coordinates newCoordinates)
+	{
 		CheckBoard.Instance.Move(squareCoordinates, newCoordinates);
 		if (behavior.SendOnMoveNotification)
 		{
@@ -24,7 +31,6 @@ public class Piece : MonoBehaviour
 		}
 		squareCoordinates = newCoordinates;
 		transform.position = CheckBoard.Instance.BoardToWorldCoordinates(squareCoordinates);
-		GameController.Instance.EndTurn();
 	}
 
 

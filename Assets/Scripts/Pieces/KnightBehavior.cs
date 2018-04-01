@@ -9,25 +9,28 @@ public class KnightBehavior : BaseBehavior
 		base.CalculateAvailableMoves();
 
 		Coordinates currentCoordinates = piece.Coordinates;
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(-1, 2));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(1, 2));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(-2, 1));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(2, 1));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(-2, -1));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(2, -1));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(-1, -2));
-		CheckIfValidAndAddToMoves(currentCoordinates + new Coordinates(1, -2));
-	}
 
-
-	private void CheckIfValidAndAddToMoves(Coordinates coord)
-	{
-		if (CheckBoard.Instance.IsSquareWithinBoard(coord))
+		for (int deltaX = -2; deltaX < 3; deltaX++)
 		{
-			if (CheckBoard.Instance.IsSquareEmpty(coord) || CheckBoard.Instance[coord].IsEnemy(piece))
+			for (int deltaY = -2; deltaY < 3; deltaY++)
 			{
-				availableMoves.Add(coord);
+				int absDeltaX = Mathf.Abs(deltaX);
+				int absDeltaY = Mathf.Abs(deltaY);
+
+				if (((absDeltaX == 2) && (absDeltaY == 1)) 
+					|| ((absDeltaX == 1) && (absDeltaY == 2)))
+				{
+					Coordinates movementCoordinates = currentCoordinates + new Coordinates(deltaX, deltaY);
+
+					if (SquareIsEmptyOrOccupiedByEnemy(movementCoordinates))
+					{
+						availableMoves.Add(movementCoordinates);
+					}
+				}
 			}
 		}
 	}
+
+
+
 }

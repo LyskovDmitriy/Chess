@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 	[SerializeField] private PiecesCreator piecesCreator;
 	[SerializeField] private PieceColor color;
 	private List<Piece> pieces;
+	private CastlingController castlingController;
 
 
 	public bool MovesInCurrentTurn()
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
 	private void Awake()
 	{
 		pieces = new List<Piece>();
+		castlingController = GetComponent<CastlingController>();
 		GameController.Instance.onTurnStart += UpdateAvailableMoves;
 	}
 
@@ -46,6 +48,8 @@ public class Player : MonoBehaviour
 			{
 				pieces[i].CalculateAvailableMoves();
 			}
+
+			castlingController.UpdateCastlingAvailability();
 		}
 	}
 
@@ -77,6 +81,11 @@ public class Player : MonoBehaviour
 		{
 			Piece piece = piecesCreator.CreatePiece(GetPieceType(x));
 			SetPieceInfo(piece, new Coordinates(x, y));
+
+			if (piece.type == PieceType.King || piece.type == PieceType.Rook)
+			{
+				castlingController.AddPiece(piece);
+			}
 		}
 	}
 

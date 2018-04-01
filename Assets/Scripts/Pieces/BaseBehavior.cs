@@ -4,11 +4,15 @@ using UnityEngine;
 public class BaseBehavior : MonoBehaviour 
 {
 
+	public Coordinates Coordinates { get { return piece.Coordinates; } }
 	public List<Coordinates> availableMoves { get; protected set; }
 	public bool SendOnMoveNotification = false;
 
 
 	protected Piece piece;
+
+
+	private CheckBoard checkBoard;
 
 
 	public virtual void CalculateAvailableMoves()
@@ -34,13 +38,13 @@ public class BaseBehavior : MonoBehaviour
 	{
 		for (int i = 0; i < availableMoves.Count; i++)
 		{
-			if (CheckBoard.Instance.IsSquareEmpty(availableMoves[i]))
+			if (SquareIsEmpty(availableMoves[i]))
 			{
-				CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanMove);
+				checkBoard.HighlightSquare(availableMoves[i], SquareHighlightType.CanMove);
 			}
 			else
 			{
-				CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanAttack);
+				checkBoard.HighlightSquare(availableMoves[i], SquareHighlightType.CanAttack);
 			}
 		}
 	}
@@ -50,7 +54,7 @@ public class BaseBehavior : MonoBehaviour
 	{
 		for (int i = 0; i < availableMoves.Count; i++)
 		{
-			CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.Unhighlight);
+			checkBoard.HighlightSquare(availableMoves[i], SquareHighlightType.Unhighlight);
 		}
 	}
 
@@ -59,10 +63,54 @@ public class BaseBehavior : MonoBehaviour
 	{
 		piece = GetComponent<Piece>();
 		availableMoves = new List<Coordinates>();
+
+		checkBoard = CheckBoard.Instance;
 	}
 
 
-	protected void OnDestroy()
+	protected bool SquareIsEmptyOrOccupiedByEnemy(Coordinates coord)
 	{
+		if (SquareIsWithinBoard(coord))
+		{
+			if (SquareIsEmpty(coord) || SquareIsOccupiedByEnemy(coord))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	protected bool SquareIsWithinBoard(Coordinates coord)
+	{
+		if (checkBoard.IsSquareWithinBoard(coord))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+
+	protected bool SquareIsEmpty(Coordinates coord)
+	{
+		if (checkBoard.IsSquareEmpty(coord))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+
+	protected bool SquareIsOccupiedByEnemy(Coordinates coord)
+	{
+		if (checkBoard[coord].IsEnemy(piece))
+		{
+			return true;
+		}
+
+		return false;
 	}
 }

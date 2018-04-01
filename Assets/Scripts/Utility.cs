@@ -48,6 +48,12 @@ public struct Coordinates
 	}
 
 
+	public static Coordinates operator -(Coordinates first, Coordinates second)
+	{
+		return new Coordinates(first.x - second.x, first.y - second.y);
+	}
+
+
 	public static Coordinates operator *(Coordinates coord, int multiplier)
 	{
 		return new Coordinates(coord.x * multiplier, coord.y * multiplier);
@@ -62,7 +68,7 @@ public struct Coordinates
 
 	public static bool operator !=(Coordinates first, Coordinates second)
 	{
-		return ((first.x != second.x) && (first.y != second.y));
+		return ((first.x != second.x) || (first.y != second.y));
 	}
 
 

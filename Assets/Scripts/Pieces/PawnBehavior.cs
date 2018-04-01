@@ -27,14 +27,16 @@ public class PawnBehavior : BaseBehavior
 		}
 			
 		Coordinates currentCoordinates = piece.Coordinates;
-		if (CheckBoard.Instance.IsSquareEmpty(currentCoordinates + movementDirection))
+		bool canMoveForward = false;
+		if (SquareIsEmpty(currentCoordinates + movementDirection))
 		{
+			canMoveForward = true;
 			availableMoves.Add(currentCoordinates + movementDirection);
 		}
 
-		if (!HasMoved())
+		if (canMoveForward && !HasMoved())
 		{
-			if (CheckBoard.Instance.IsSquareEmpty(currentCoordinates + movementDirection * 2))
+			if (SquareIsEmpty(currentCoordinates + movementDirection * 2))
 			{
 				availableMoves.Add(currentCoordinates + movementDirection * 2);
 			}
@@ -85,14 +87,16 @@ public class PawnBehavior : BaseBehavior
 		Coordinates currentCoordinates = piece.Coordinates;
 		if ((currentCoordinates.x != newCoordinates.x) && (currentCoordinates.y != newCoordinates.y))
 		{
-			if (CheckBoard.Instance.IsSquareEmpty(currentCoordinates + movementDirection + Coordinates.Left))
+			Coordinates leftAttack = currentCoordinates + Coordinates.Left;
+			if (CanAttackEnPassant(leftAttack))
 			{
-				CheckBoard.Instance[currentCoordinates + Coordinates.Left].Remove();
+				CheckBoard.Instance[leftAttack].Remove();
 			}
-				
-			if (CheckBoard.Instance.IsSquareEmpty(currentCoordinates + movementDirection + Coordinates.Right))
+
+			Coordinates rightAttack = currentCoordinates + Coordinates.Right;
+			if (CanAttackEnPassant(rightAttack))
 			{
-				CheckBoard.Instance[currentCoordinates + Coordinates.Right].Remove();
+				CheckBoard.Instance[rightAttack].Remove();
 			}
 		}
 
@@ -110,7 +114,7 @@ public class PawnBehavior : BaseBehavior
 	{
 		for (int i = 0; i < availableMoves.Count; i++)
 		{
-			if (CheckBoard.Instance.IsSquareEmpty(availableMoves[i]))
+			if (SquareIsEmpty(availableMoves[i]))
 			{
 				if ((piece.Coordinates.x != availableMoves[i].x) && (piece.Coordinates.y != availableMoves[i].y))
 				{
@@ -131,9 +135,9 @@ public class PawnBehavior : BaseBehavior
 
 	private bool CanAttackDiagonally(Coordinates attackDirection)
 	{
-		if (CheckBoard.Instance.IsSquareWithinBoard(attackDirection))
+		if (SquareIsWithinBoard(attackDirection))
 		{
-			if (!CheckBoard.Instance.IsSquareEmpty(attackDirection))
+			if (!SquareIsEmpty(attackDirection) && SquareIsOccupiedByEnemy(attackDirection))
 			{
 				return true;
 			}
@@ -145,11 +149,11 @@ public class PawnBehavior : BaseBehavior
 
 	private bool CanAttackEnPassant(Coordinates possiblePawnPosition)
 	{
-		if (CheckBoard.Instance.IsSquareWithinBoard(possiblePawnPosition))
+		if (SquareIsWithinBoard(possiblePawnPosition) && !SquareIsEmpty(possiblePawnPosition))
 		{
 			Piece possibleEnemy = CheckBoard.Instance[possiblePawnPosition];
 
-			if ((possibleEnemy != null) && possibleEnemy.IsEnemy(piece) && possibleEnemy.type == PieceType.Pawn)
+			if (possibleEnemy.IsEnemy(piece) && possibleEnemy.type == PieceType.Pawn)
 			{
 				if (possibleEnemy.GetComponent<PawnBehavior>().MovedTwoSquaresLastTurn)
 				{
