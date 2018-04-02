@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  nonLinearAttackTypes: 000000000300000005000000
 --- !u!114 &114319719049165176
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -66,6 +67,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SendOnMoveNotification: 1
+  castlingController: {fileID: 0}
 --- !u!212 &212644928498725578
 SpriteRenderer:
   m_ObjectHideFlags: 1

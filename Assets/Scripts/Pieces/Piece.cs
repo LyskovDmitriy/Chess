@@ -10,7 +10,7 @@ public class Piece : MonoBehaviour
 	public Coordinates Coordinates { get { return squareCoordinates; } set { squareCoordinates = value; } }
 	public Player HoldingPlayer { get; set; }
 
-
+	[SerializeField] private List<PieceType> nonLinearAttackTypes;
 	private Coordinates squareCoordinates;
 	private BaseBehavior behavior;
 
@@ -55,6 +55,12 @@ public class Piece : MonoBehaviour
 	}
 
 
+	public bool IsNonLinearAttackType(PieceType type)
+	{
+		return nonLinearAttackTypes.Contains(type);
+	}
+
+
 	public bool CanMove (Coordinates coord)
 	{
 		return behavior.CanMove(coord);
@@ -90,6 +96,12 @@ public class Piece : MonoBehaviour
 	{
 		CheckBoard.Instance.HighlightSquare(squareCoordinates, SquareHighlightType.Unhighlight);
 		behavior.UnhighlightAvailableMoves();
+	}
+
+
+	public void Initialize()
+	{
+		behavior.Initialize();
 	}
 
 

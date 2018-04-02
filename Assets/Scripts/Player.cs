@@ -55,6 +55,7 @@ public class Player : MonoBehaviour
 	{
 		if (MovesInCurrentTurn())
 		{
+			//TODO: don't update everything at the beginning of a turn, do it on demand. Calculate instantly only if king in check
 			for (int i = 0; i < pieces.Count; i++)
 			{
 				pieces[i].CalculateAvailableMoves();
@@ -117,10 +118,11 @@ public class Player : MonoBehaviour
 
 	private void SetPieceInfo(Piece piece, Coordinates coord)
 	{
+		piece.HoldingPlayer = this;
 		piece.transform.SetParent(transform);
 		piece.Coordinates = coord;
 		piece.transform.position = CheckBoard.Instance.BoardToWorldCoordinates(coord);
-		piece.HoldingPlayer = this;
+		piece.Initialize();
 		pieces.Add(piece);
 		CheckBoard.Instance.AddPieceToBoard(piece);
 	}

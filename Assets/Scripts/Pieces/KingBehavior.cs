@@ -16,7 +16,7 @@ public class KingBehavior : BaseBehavior
 	{
 		base.CalculateAvailableMoves();
 
-		CalculateAvailableMoves(CheckBeforeAddingMoveToAvailable, AddToAvailableMoves);
+		CalculateAvailableMoves(SquareIsEmptyOrOccupiedByEnemy, AddToAvailableMoves);
 	}
 
 
@@ -28,7 +28,7 @@ public class KingBehavior : BaseBehavior
 
 	public void AllowCastling(Coordinates direction)
 	{
-		availableMoves.Add(piece.Coordinates + direction * 2);
+		AddToAvailableMoves(piece.Coordinates + direction * 2);
 	}
 
 
@@ -44,46 +44,42 @@ public class KingBehavior : BaseBehavior
 
 	protected override bool CheckBeforeAddingMoveToAvailable(Coordinates movementCoordinates)
 	{
-		if (SquareIsEmptyOrOccupiedByEnemy(movementCoordinates) )
+		if (EnemyAttackMap[movementCoordinates].isUnderAttack)
 		{
-			if (enemyAttackMap[movementCoordinates].isUnderAttack)
-			{
-				return false;
-			}
+			return false;
+		}
 
-			Coordinates currentCoordinates = piece.Coordinates;
-			//square is not under attack won't be after movement
-			if (!enemyAttackMap[currentCoordinates].isUnderAttack)
-			{
-				return true;
-			}
-			//square is not under attack but can be after movement
-			SquareAttackInfo squareAttack = enemyAttackMap[currentCoordinates];
-
-			for (int i = 0; i < squareAttack.attackDirections.Count; i++)
-			{
-				PieceType attackingPiece = squareAttack.attackingPieces[i].type;
-
-				if (attackingPiece == PieceType.King || attackingPiece == PieceType.Knight || attackingPiece == PieceType.Pawn)
-				{
-					//for these pieces attack direction doesn't matter, 
-					//because after attacked piece's movement they don't change attacked squares, 
-					//unlike pieces that attack linearly
-					continue;
-				}
-				else
-				{
-					Coordinates movementDirection = (movementCoordinates - piece.Coordinates).NormalizedDirection;
-					if (squareAttack.attackDirections[i] == movementDirection)
-					{
-						return false;
-					}
-				}
-			}
-
+		Coordinates currentCoordinates = piece.Coordinates;
+		//square is not under attack won't be after movement
+		if (!EnemyAttackMap[currentCoordinates].isUnderAttack)
+		{
 			return true;
 		}
-		return false;
+		//square is not under attack but can be after movement
+		SquareAttackInfo squareAttack = EnemyAttackMap[currentCoordinates];
+
+		for (int i = 0; i < squareAttack.attackDirections.Count; i++)
+		{
+			PieceType attackingPiece = squareAttack.attackingPieces[i].type;
+
+			if (piece.IsNonLinearAttackType(attackingPiece))
+			{
+				//for these pieces attack direction doesn't matter, 
+				//because after attacked piece's movement they don't change attacked squares, 
+				//unlike pieces that attack linearly
+				continue;
+			}
+			else
+			{
+				Coordinates movementDirection = (movementCoordinates - piece.Coordinates).NormalizedDirection;
+				if (squareAttack.attackDirections[i] == movementDirection)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 

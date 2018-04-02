@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
+  nonLinearAttackTypes: 000000000300000005000000
 --- !u!114 &114333474587884878
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -65,6 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6b95eefe1a1d947b2c8b528f2453f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SendOnMoveNotification: 0
 --- !u!212 &212644928498725578
 SpriteRenderer:
   m_ObjectHideFlags: 1

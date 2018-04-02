@@ -98,6 +98,12 @@ public struct Coordinates
 	}
 
 
+	public static Coordinates operator -(Coordinates coord)
+	{
+		return new Coordinates(-coord.x, -coord.y);
+	}
+
+
 	public static Coordinates operator *(Coordinates coord, int multiplier)
 	{
 		return new Coordinates(coord.x * multiplier, coord.y * multiplier);

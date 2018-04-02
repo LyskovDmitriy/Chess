@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 3
+  nonLinearAttackTypes: 000000000300000005000000
 --- !u!114 &114875222858659052
 MonoBehaviour:
   m_ObjectHideFlags: 1
