@@ -7,8 +7,7 @@ public class CastlingController : MonoBehaviour
 	private KingBehavior king;
 	private RookBehavior leftRook;
 	private RookBehavior rightRook;
-
-
+	private AttackMap enemyAttackMap;
 	private bool castlingIsImpossible = false;
 
 
@@ -18,6 +17,7 @@ public class CastlingController : MonoBehaviour
 		{
 			king = pieceToAdd.GetComponent<KingBehavior>();
 			king.castlingController = this;
+			enemyAttackMap = pieceToAdd.HoldingPlayer.EnemyAttackMap;
 		}
 		else if (pieceToAdd.type == PieceType.Rook)
 		{
@@ -66,28 +66,38 @@ public class CastlingController : MonoBehaviour
 			return;
 		}
 
-		if (CastlingIsAvailable(leftRook, Coordinates.Right))
+		if (CastlingIsAvailable(leftRook, Coordinates.Left))
 		{
 			king.AllowCastling(Coordinates.Left);
 		}
-		if (CastlingIsAvailable(rightRook, Coordinates.Left))
+		if (CastlingIsAvailable(rightRook, Coordinates.Right))
 		{
 			king.AllowCastling(Coordinates.Right);
 		}
 	}
 
 
-	public bool CastlingIsAvailable(RookBehavior rook, Coordinates directionFromRookToKing)
+	public bool CastlingIsAvailable(RookBehavior rook, Coordinates directionFromKingToRook)
 	{
 		if ((rook == null) || rook.HasMoved)
 		{
 			return false;
 		}
-			
-		for (Coordinates coordinatesToCheck = rook.Coordinates + directionFromRookToKing;
-			coordinatesToCheck != king.Coordinates; coordinatesToCheck += directionFromRookToKing)
+
+		for (Coordinates coordinatesToCheck = king.Coordinates + directionFromKingToRook;
+			coordinatesToCheck != rook.Coordinates; coordinatesToCheck += directionFromKingToRook)
 		{
 			if (!CheckBoard.Instance.IsSquareEmpty(coordinatesToCheck))
+			{
+				return false;
+			}
+		}
+
+		for (Coordinates coordinatesToCheck = king.Coordinates, 
+			coordinatesAfterLastCheck = coordinatesToCheck + directionFromKingToRook * 3;
+				coordinatesToCheck != coordinatesAfterLastCheck; coordinatesToCheck += directionFromKingToRook)
+		{
+			if (enemyAttackMap[coordinatesToCheck].isUnderAttack)
 			{
 				return false;
 			}

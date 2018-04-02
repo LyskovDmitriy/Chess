@@ -132,7 +132,7 @@ public class CheckBoard : MonoBehaviour
 		{
 			if (highlightedSquares.Contains(squaresObjects[coord.x, coord.y]))
 			{
-				Debug.Log("Trying to highlight already highlighted square");
+				Debug.Log("Trying to highlight already highlighted square " + coord);
 			}
 			highlightedSquares.Add(squaresObjects[coord.x, coord.y]);
 		}

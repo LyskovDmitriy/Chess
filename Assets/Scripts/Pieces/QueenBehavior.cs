@@ -7,7 +7,14 @@ public class QueenBehavior : LinearMovementBehavior
 	{
 		base.CalculateAvailableMoves();
 
-		AddDiagonalLineMoves();
-		AddStraightLineMoves();
+		AddAvailableDiagonalLineMoves();
+		AddAvailableStraightLineMoves();
+	}
+
+
+	public override void CalculateMovesForAttackMap()
+	{
+		AddDiagonalLineMovesToAttackMap();
+		AddStraightLineMovesToAttackMap();
 	}
 }

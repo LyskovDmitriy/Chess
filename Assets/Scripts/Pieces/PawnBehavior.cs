@@ -32,14 +32,14 @@ public class PawnBehavior : BaseBehavior
 		if (SquareIsEmpty(currentCoordinates + movementDirection))
 		{
 			canMoveForward = true;
-			availableMoves.Add(currentCoordinates + movementDirection);
+			AddToAvailableMoves(currentCoordinates + movementDirection);
 		}
 
 		if (canMoveForward && !HasMoved())
 		{
 			if (SquareIsEmpty(currentCoordinates + movementDirection * 2))
 			{
-				availableMoves.Add(currentCoordinates + movementDirection * 2);
+				AddToAvailableMoves(currentCoordinates + movementDirection * 2);
 			}
 		} 
 
@@ -47,7 +47,7 @@ public class PawnBehavior : BaseBehavior
 		Coordinates attackLeftForward = currentCoordinates + movementDirection + Coordinates.Left;
 		if (CanAttackDiagonally(attackLeftForward))
 		{
-			availableMoves.Add(attackLeftForward);
+			AddToAvailableMoves(attackLeftForward);
 			canAttackLeft = true;
 		}
 
@@ -55,7 +55,7 @@ public class PawnBehavior : BaseBehavior
 		Coordinates attackRightForward = currentCoordinates + movementDirection + Coordinates.Right;
 		if (CanAttackDiagonally(attackRightForward))
 		{
-			availableMoves.Add(attackRightForward);
+			AddToAvailableMoves(attackRightForward);
 			canAttackRight = true;
 		}
 
@@ -66,7 +66,7 @@ public class PawnBehavior : BaseBehavior
 
 			if (CanAttackEnPassant(attackLeft))
 			{
-				availableMoves.Add(attackLeftForward);
+				AddToAvailableMoves(attackLeftForward);
 			}
 		}
 
@@ -76,10 +76,26 @@ public class PawnBehavior : BaseBehavior
 
 			if (CanAttackEnPassant(attackRight))
 			{
-				availableMoves.Add(attackRightForward);
+				AddToAvailableMoves(attackRightForward);
 			}
 		}
 	} 
+
+
+	public override void CalculateMovesForAttackMap()
+	{
+		Coordinates attackLeftForward = piece.Coordinates + movementDirection + Coordinates.Left;
+		if (SquareIsWithinBoard(attackLeftForward))
+		{
+			AddToAttackMap(attackLeftForward);
+		}
+
+		Coordinates attackRightForward = piece.Coordinates + movementDirection + Coordinates.Right;
+		if (SquareIsWithinBoard(attackRightForward))
+		{
+			AddToAttackMap(attackRightForward);
+		}
+	}
 
 
 	public override void ReactToMovement(Coordinates newCoordinates)

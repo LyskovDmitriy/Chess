@@ -7,6 +7,12 @@ public class BishopBehavior : LinearMovementBehavior
 	{
 		base.CalculateAvailableMoves();
 
-		AddDiagonalLineMoves();
+		AddAvailableDiagonalLineMoves();
+	}
+
+
+	public override void CalculateMovesForAttackMap()
+	{
+		AddDiagonalLineMovesToAttackMap();
 	}
 }

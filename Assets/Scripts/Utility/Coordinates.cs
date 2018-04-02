@@ -1,4 +1,6 @@
-﻿[System.Serializable]
+﻿using UnityEngine;
+
+[System.Serializable]
 public struct Coordinates
 {
 	
@@ -10,6 +12,50 @@ public struct Coordinates
 	{
 		x = X;
 		y = Y;
+	}
+		
+	//Direction's x and y values must have the same length or one of them must be equal to 0
+	public Coordinates NormalizedDirection
+	{
+		get{
+			if (x == 0 && y == 0)
+			{
+				return this;
+			}
+			else if (x == 0)
+			{
+				return (0 < y) ? Up : Down;
+			}
+			else if (y == 0)
+			{
+				return (0 < x) ? Right : Left;
+			}
+			else if (Mathf.Abs(x) != Mathf.Abs(y)) //invalid coordinates
+			{
+				return Zero;
+			}
+			else if (x < 0 && 0 < y)
+			{
+				return LeftUp;
+			}
+			else if (0 < x && 0 < y)
+			{
+				return RightUp;
+			}
+			else if (0 < x && y < 0)
+			{
+				return RightDown;
+			}
+			else if (x < 0 && y < 0)
+			{
+				return LeftDown;
+			}
+			else
+			{
+				Debug.Log("Didn't math any conditions " + this);
+				return Zero;
+			}
+		}
 	}
 
 	//Shorthand for writing new Coordinates(-1, 0)
@@ -72,6 +118,6 @@ public struct Coordinates
 
 	public override string ToString()
 	{
-		return string.Format("Coordinates ({0}, {1})", x, y);
+		return string.Format("({0}, {1})", x, y);
 	}
 }

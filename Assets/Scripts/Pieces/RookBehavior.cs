@@ -14,7 +14,13 @@ public class RookBehavior : LinearMovementBehavior
 	{
 		base.CalculateAvailableMoves();
 
-		AddStraightLineMoves();
+		AddAvailableStraightLineMoves();
+	}
+
+
+	public override void CalculateMovesForAttackMap()
+	{
+		AddStraightLineMovesToAttackMap();
 	}
 
 

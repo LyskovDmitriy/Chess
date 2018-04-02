@@ -6,10 +6,14 @@ public class Player : MonoBehaviour
 {
 
 	public PieceColor Color { get { return color; }}
+	public AttackMap PlayerAttackMap { get { return playerAttackMap; } }
+	public AttackMap EnemyAttackMap { get { return enemyAttackMap; } }
 
 
-	[SerializeField] private PiecesCreator piecesCreator;
 	[SerializeField] private PieceColor color;
+	[SerializeField] private AttackMap playerAttackMap;
+	[SerializeField] private AttackMap enemyAttackMap;
+	[SerializeField] private PiecesCreator piecesCreator;
 	private List<Piece> pieces;
 	private CastlingController castlingController;
 
@@ -36,6 +40,7 @@ public class Player : MonoBehaviour
 	{
 		pieces = new List<Piece>();
 		castlingController = GetComponent<CastlingController>();
+		GameController.Instance.onTurnEnd += UpdateAttackMap;
 		GameController.Instance.onTurnStart += UpdateAvailableMoves;
 	}
 
@@ -56,6 +61,20 @@ public class Player : MonoBehaviour
 			}
 
 			castlingController.UpdateCastlingAvailability();
+		}
+	}
+
+
+	private void UpdateAttackMap()
+	{
+		if (MovesInCurrentTurn())
+		{
+			playerAttackMap.Clear();
+
+			for (int i = 0; i < pieces.Count; i++)
+			{
+				pieces[i].CalculateMovesForAttackMap();
+			}
 		}
 	}
 
@@ -145,6 +164,7 @@ public class Player : MonoBehaviour
 
 	private void OnDestroy()
 	{
+		GameController.Instance.onTurnEnd -= UpdateAttackMap;
 		GameController.Instance.onTurnStart -= UpdateAvailableMoves;
 	}
 }

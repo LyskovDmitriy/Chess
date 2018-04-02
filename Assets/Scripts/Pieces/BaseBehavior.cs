@@ -10,6 +10,8 @@ public class BaseBehavior : MonoBehaviour
 
 
 	protected Piece piece;
+	protected AttackMap friendlyAttackMap; //to add moves to
+	protected AttackMap enemyAttackMap; //to check enemy moves
 
 
 	private CheckBoard checkBoard;
@@ -21,8 +23,14 @@ public class BaseBehavior : MonoBehaviour
 	}
 
 
+	public virtual void CalculateMovesForAttackMap()
+	{
+	}
+
+
 	public virtual void ReactToMovement(Coordinates newCoordinates)
-	{ }
+	{
+	}
 
 
 	public bool CanMove(Coordinates coord)
@@ -66,8 +74,32 @@ public class BaseBehavior : MonoBehaviour
 	{
 		piece = GetComponent<Piece>();
 		availableMoves = new List<Coordinates>();
-
 		checkBoard = CheckBoard.Instance;
+	}
+
+
+	protected void Start()
+	{
+		friendlyAttackMap = piece.HoldingPlayer.PlayerAttackMap;
+		enemyAttackMap = piece.HoldingPlayer.EnemyAttackMap;
+	}
+
+
+	protected void AddToAttackMap(Coordinates attackCoordinates)
+	{
+		friendlyAttackMap.AttackSquare(attackCoordinates, piece, (attackCoordinates - piece.Coordinates).NormalizedDirection);
+	}
+
+
+	protected void AddToAvailableMoves(Coordinates movementCoordinates)
+	{
+		availableMoves.Add(movementCoordinates);
+	}
+
+
+	protected virtual bool CheckBeforeAddingMoveToAvailable(Coordinates movementCoordinates)
+	{
+		return true;
 	}
 
 

@@ -4,17 +4,22 @@ using UnityEngine;
 public class AttackMap : MonoBehaviour 
 {
 
-	private SquareAttackInfo[,] attackInfoMap;
-
-
-	private void Awake () 
-	{
-		attackInfoMap = new SquareAttackInfo[CheckBoard.Instance.Size, CheckBoard.Instance.Size];
-		GameController.Instance.onTurnEnd += OnTurnEnd;
+	public SquareAttackInfo this[Coordinates squareCoord]
+	{ 
+		get { return attackInfoMap[squareCoord.x, squareCoord.y]; }	
 	}
 
 
-	private void OnTurnEnd()
+	private SquareAttackInfo[,] attackInfoMap;
+
+
+	public void AttackSquare(Coordinates squareCoord, Piece attackingPiece, Coordinates attackDirection)
+	{
+		attackInfoMap[squareCoord.x, squareCoord.y].AddAttackInfo(attackingPiece, attackDirection);
+	}
+
+
+	public void Clear()
 	{
 		for (int x = 0; x < CheckBoard.Instance.Size; x++)
 		{
@@ -26,8 +31,16 @@ public class AttackMap : MonoBehaviour
 	}
 
 
-	private void OnDestroy()
+	private void Awake () 
 	{
-		GameController.Instance.onTurnEnd += OnTurnEnd;
+		int size = CheckBoard.Instance.Size;
+		attackInfoMap = new SquareAttackInfo[size, size];
+		for (int x = 0; x < size; x++)
+		{
+			for (int y = 0; y < size; y++)
+			{
+				attackInfoMap[x, y] = new SquareAttackInfo();
+			}
+		}
 	}
 }

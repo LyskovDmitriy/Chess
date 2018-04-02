@@ -15,8 +15,8 @@ public class GameController : MonoBehaviour
 
 	public void EndTurn()
 	{
-		ColorToMove = (PieceColor)( ((int)ColorToMove + 1) % 2 );
 		onTurnEnd();
+		ColorToMove = (PieceColor)( ((int)ColorToMove + 1) % 2 );
 		onTurnStart();
 	}
 

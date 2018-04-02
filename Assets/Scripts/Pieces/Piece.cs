@@ -67,6 +67,12 @@ public class Piece : MonoBehaviour
 	}
 
 
+	public void CalculateMovesForAttackMap()
+	{
+		behavior.CalculateMovesForAttackMap();
+	}
+
+
 	public bool IsInteractive()
 	{
 		return behavior.IsInteractive();

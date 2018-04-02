@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class KnightBehavior : BaseBehavior 
 {
@@ -8,6 +9,18 @@ public class KnightBehavior : BaseBehavior
 	{
 		base.CalculateAvailableMoves();
 
+		CalculateAvailableMoves(SquareIsEmptyOrOccupiedByEnemy, AddToAvailableMoves);
+	}
+
+
+	public override void CalculateMovesForAttackMap()
+	{
+		CalculateAvailableMoves(SquareIsWithinBoard, AddToAttackMap);
+	}
+
+
+	private void CalculateAvailableMoves(Func<Coordinates, bool> squareCheckBeforeAdding, Action<Coordinates> addMove)
+	{
 		Coordinates currentCoordinates = piece.Coordinates;
 
 		for (int deltaX = -2; deltaX < 3; deltaX++)
@@ -31,16 +44,12 @@ public class KnightBehavior : BaseBehavior
 					|| ((absDeltaX == 1) && (absDeltaY == 2)))
 				{
 					Coordinates movementCoordinates = currentCoordinates + new Coordinates(deltaX, deltaY);
-
-					if (SquareIsEmptyOrOccupiedByEnemy(movementCoordinates))
+					if (squareCheckBeforeAdding(movementCoordinates))
 					{
-						availableMoves.Add(movementCoordinates);
+						addMove(movementCoordinates);
 					}
 				}
 			}
 		}
 	}
-
-
-
 }
