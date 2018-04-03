@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
@@ -9,6 +8,7 @@ public class Piece : MonoBehaviour
 	public PieceType type;
 	public Coordinates Coordinates { get { return squareCoordinates; } set { squareCoordinates = value; } }
 	public Player HoldingPlayer { get; set; }
+
 
 	[SerializeField] private List<PieceType> nonLinearAttackTypes;
 	private Coordinates squareCoordinates;
@@ -21,7 +21,7 @@ public class Piece : MonoBehaviour
 		GameController.Instance.EndTurn();
 	}
 
-
+	//is used for castling
 	public void MoveWithoutEndTurn(Coordinates newCoordinates)
 	{
 		CheckBoard.Instance.Move(squareCoordinates, newCoordinates);
@@ -51,7 +51,7 @@ public class Piece : MonoBehaviour
 
 	public bool IsEnemy(Piece possibleEnemy)
 	{
-		return HoldingPlayer.Color != possibleEnemy.HoldingPlayer.Color;
+		return (HoldingPlayer.Color != possibleEnemy.HoldingPlayer.Color);
 	}
 
 

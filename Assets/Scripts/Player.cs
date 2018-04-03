@@ -5,6 +5,9 @@ using System;
 public class Player : MonoBehaviour 
 {
 
+	public static event Action<PieceColor?> onPlayerDefeated;
+
+
 	public PieceColor Color { get { return color; }}
 	public AttackMap PlayerAttackMap { get { return playerAttackMap; } }
 	public AttackMap EnemyAttackMap { get { return enemyAttackMap; } }
@@ -15,6 +18,7 @@ public class Player : MonoBehaviour
 	[SerializeField] private AttackMap enemyAttackMap;
 	[SerializeField] private PiecesCreator piecesCreator;
 	private List<Piece> pieces;
+	private KingBehavior king;
 	private CastlingController castlingController;
 
 
@@ -42,6 +46,8 @@ public class Player : MonoBehaviour
 		castlingController = GetComponent<CastlingController>();
 		GameController.Instance.onTurnEnd += UpdateAttackMap;
 		GameController.Instance.onTurnStart += UpdateAvailableMoves;
+		GameController.Instance.onGameRestart += CreatePieces;
+		onPlayerDefeated += ClearPieces;
 	}
 
 
@@ -55,10 +61,38 @@ public class Player : MonoBehaviour
 	{
 		if (MovesInCurrentTurn())
 		{
-			//TODO: don't update everything at the beginning of a turn, do it on demand. Calculate instantly only if king in check
+			bool kingWasCheckedLastTurn = enemyAttackMap.KingIsChecked;
+
+			if (king.IsInCheck())
+			{
+				enemyAttackMap.CheckKing(king.Coordinates);
+			}
+			else if (kingWasCheckedLastTurn)
+			{
+				enemyAttackMap.UncheckKing();
+			}
+
+			bool atLeastOnePieceCanMove = false;
 			for (int i = 0; i < pieces.Count; i++)
 			{
 				pieces[i].CalculateAvailableMoves();
+
+				if (pieces[i].IsInteractive())
+				{
+					atLeastOnePieceCanMove = true;
+				}
+			}
+
+			if (!atLeastOnePieceCanMove)
+			{
+				if (king.IsInCheck())
+				{
+					onPlayerDefeated(color);
+				}
+				else
+				{
+					onPlayerDefeated(null); //a draw
+				}
 			}
 
 			castlingController.UpdateCastlingAvailability();
@@ -89,12 +123,12 @@ public class Player : MonoBehaviour
 
 	private void CreatePawns()
 	{
-		int pawnY = (color == PieceColor.White) ? 1 : 6;
+		int y = (color == PieceColor.White) ? 1 : 6;
 
 		for (int x = 0; x < CheckBoard.Instance.Size; x++)
 		{
 			Piece pawn = piecesCreator.CreatePiece(PieceType.Pawn);
-			SetPieceInfo(pawn, new Coordinates(x, pawnY));
+			SetPieceInfo(pawn, new Coordinates(x, y));
 		}
 	}
 
@@ -110,6 +144,10 @@ public class Player : MonoBehaviour
 
 			if (piece.type == PieceType.King || piece.type == PieceType.Rook)
 			{
+				if (piece.type == PieceType.King)
+				{
+					king = piece.GetComponent<KingBehavior>();
+				}
 				castlingController.AddPiece(piece);
 			}
 		}
@@ -146,27 +184,27 @@ public class Player : MonoBehaviour
 		{
 			return PieceType.Queen;
 		}
-		else if (x == 4)
-		{
-			return PieceType.King;
-		}
 		else
 		{
-			Debug.LogError("Wrong X coordinate: " + x);
-			return PieceType.Pawn;
+			return PieceType.King;
 		}
 	}
 
 
-//	private void ClearPieces(PieceColor? defeatedPlayer)
-//	{
-//
-//	}
+	private void ClearPieces(PieceColor? defeatedPlayer)
+	{
+		while (pieces.Count > 0)
+		{
+			pieces[0].Remove();
+		}
+	}
 
 
 	private void OnDestroy()
 	{
 		GameController.Instance.onTurnEnd -= UpdateAttackMap;
 		GameController.Instance.onTurnStart -= UpdateAvailableMoves;
+		GameController.Instance.onGameRestart -= CreatePieces;
+		onPlayerDefeated -= ClearPieces;
 	}
 }

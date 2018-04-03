@@ -3,13 +3,8 @@
 public class LinearMovementBehavior : BaseBehavior 
 {
 	protected void AddAvailableMovesInDirection(Coordinates delta, 
-		Action<Coordinates> addMove, Action<Coordinates> actionAfterFindingOccupiedSquare = null)
+		Action<Coordinates> addMove, Action<Coordinates> actionAfterFindingOccupiedSquare)
 	{
-		if (actionAfterFindingOccupiedSquare == null)
-		{
-			actionAfterFindingOccupiedSquare = addMove;
-		}
-
 		for (Coordinates movementCoordinates = piece.Coordinates + delta;
 			SquareIsWithinBoard(movementCoordinates);
 			movementCoordinates += delta)
@@ -56,18 +51,18 @@ public class LinearMovementBehavior : BaseBehavior
 	//Functions to fill attack map
 	protected void AddDiagonalLineMovesToAttackMap()
 	{
-		AddAvailableMovesInDirection(Coordinates.LeftUp, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.RightUp, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.RightDown, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.LeftDown, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.LeftUp, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.RightUp, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.RightDown, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.LeftDown, AddToAttackMap, AddToAttackMap);
 	}
 
 
 	protected void AddStraightLineMovesToAttackMap()
 	{
-		AddAvailableMovesInDirection(Coordinates.Left, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.Up, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.Right, AddToAttackMap);
-		AddAvailableMovesInDirection(Coordinates.Down, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.Left, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.Up, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.Right, AddToAttackMap, AddToAttackMap);
+		AddAvailableMovesInDirection(Coordinates.Down, AddToAttackMap, AddToAttackMap);
 	}
 }

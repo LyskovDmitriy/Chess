@@ -88,8 +88,8 @@ MonoBehaviour:
     type: 2}
   pieceSelectedMaterial: {fileID: 2100000, guid: 08e2e57d4d623f949a4157c086d9300b,
     type: 2}
-  transparentMaterial: {fileID: 0}
-  overlappingRenderer: {fileID: 212963896613637490}
+  transparentMaterial: {fileID: 2100000, guid: 941634818ce0bda40bfc6776e2f52e77, type: 2}
+  overlappingSquareRenderer: {fileID: 212963896613637490}
 --- !u!212 &212644928498725578
 SpriteRenderer:
   m_ObjectHideFlags: 1

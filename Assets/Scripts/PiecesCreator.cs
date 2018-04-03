@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu]
 public class PiecesCreator : ScriptableObject 
@@ -17,7 +16,7 @@ public class PiecesCreator : ScriptableObject
 	}
 
 
-	public PiecePrefabAndSprite FindPieceInfo(PieceType type)
+	private PiecePrefabAndSprite FindPieceInfo(PieceType type)
 	{
 		for (int i = 0; i < pieces.Length; i++)
 		{

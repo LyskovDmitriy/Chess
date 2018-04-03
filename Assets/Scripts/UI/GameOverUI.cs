@@ -10,13 +10,14 @@ public class GameOverUI : MonoBehaviour
 
 	public void Restart()
 	{
-
+		gameOverScreen.SetActive(false);
+		GameController.Instance.RestartGame();
 	}
 
 
 	private void Awake () 
 	{
-		//Player.onPlayerDefeated += GameOver;
+		Player.onPlayerDefeated += GameOver;
 	}
 
 
@@ -37,6 +38,6 @@ public class GameOverUI : MonoBehaviour
 
 	private void OnDestroy () 
 	{
-		//Player.onPlayerDefeated -= GameOver;
+		Player.onPlayerDefeated -= GameOver;
 	}
 }

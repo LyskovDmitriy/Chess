@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 
-public class PiecePromoter : MonoBehaviour 
+public class PawnPromoter : MonoBehaviour 
 {
 
-	public static PiecePromoter Instance { get; private set; }
+	public static PawnPromoter Instance { get; private set; }
 
 
 	[SerializeField] private Image queenButtonImage;
@@ -20,15 +21,12 @@ public class PiecePromoter : MonoBehaviour
 
 	public void RequestPromotion(Player holdingPlayer, Coordinates pawnCoordinates)
 	{
+		GameController.Instance.PawnPromotionStarted();
 		inputController.enabled = false;
 		playerForPromotedPiece = holdingPlayer;
 		coordinatesForPromotedPiece = pawnCoordinates;
 
-		queenButtonImage.sprite = FindPieceSprite(PieceType.Queen);
-		rookButtonImage.sprite = FindPieceSprite(PieceType.Rook);
-		knightButtonImage.sprite = FindPieceSprite(PieceType.Knight);
-		bishopButtonImage.sprite = FindPieceSprite(PieceType.Bishop);
-
+		ChangeButtonsSpritesToMatchPlayerColor();
 		RotateTowardsPlayerForPromotedPiece();
 		promotionScreen.SetActive(true);
 	}
@@ -38,6 +36,7 @@ public class PiecePromoter : MonoBehaviour
 	{
 		promotionScreen.SetActive(false);
 		playerForPromotedPiece.AddPiece(type, coordinatesForPromotedPiece);
+		GameController.Instance.PawnPromotionCompleted();
 		playerForPromotedPiece = null;
 		inputController.enabled = true;
 	}
@@ -64,12 +63,21 @@ public class PiecePromoter : MonoBehaviour
 		{
 			if (piecesSprites[i].type == type)
 			{
-				return (playerForPromotedPiece.Color == PieceColor.White) ? 
-					piecesSprites[i].whiteSprite : piecesSprites[i].blackSprite;
+				return ((playerForPromotedPiece.Color == PieceColor.White) ? 
+					piecesSprites[i].whiteSprite : piecesSprites[i].blackSprite);
 			}
 		}
 
 		return null;
+	}
+
+
+	private void ChangeButtonsSpritesToMatchPlayerColor()
+	{
+		queenButtonImage.sprite = FindPieceSprite(PieceType.Queen);
+		rookButtonImage.sprite = FindPieceSprite(PieceType.Rook);
+		knightButtonImage.sprite = FindPieceSprite(PieceType.Knight);
+		bishopButtonImage.sprite = FindPieceSprite(PieceType.Bishop);
 	}
 
 

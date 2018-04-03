@@ -7,7 +7,7 @@ public class BoardSquare : MonoBehaviour
 	[SerializeField] private Material canAttackSquareMaterial;
 	[SerializeField] private Material pieceSelectedMaterial;
 	[SerializeField] private Material transparentMaterial;
-	[SerializeField] private SpriteRenderer overlappingRenderer;
+	[SerializeField] private SpriteRenderer overlappingSquareRenderer;
 	private Material standartMaterial;
 	private new SpriteRenderer renderer;
 
@@ -24,16 +24,16 @@ public class BoardSquare : MonoBehaviour
 		switch (type)
 		{
 			case SquareHighlightType.CanAttack:
-				overlappingRenderer.material = canAttackSquareMaterial;
+				overlappingSquareRenderer.material = canAttackSquareMaterial;
 				break;
 			case SquareHighlightType.CanMove:
-				overlappingRenderer.material = canMoveSquareMaterial;
+				overlappingSquareRenderer.material = canMoveSquareMaterial;
 				break;
 			case SquareHighlightType.SelectedPiece:
-				overlappingRenderer.material = pieceSelectedMaterial;
+				overlappingSquareRenderer.material = pieceSelectedMaterial;
 				break;
 			case SquareHighlightType.Unhighlight:
-				overlappingRenderer.material = transparentMaterial;
+				overlappingSquareRenderer.material = transparentMaterial;
 				break;
 		}
 	}

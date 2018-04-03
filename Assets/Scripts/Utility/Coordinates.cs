@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 
-[System.Serializable]
+[Serializable]
 public struct Coordinates
 {
 	
@@ -30,7 +30,7 @@ public struct Coordinates
 			{
 				return (0 < x) ? Right : Left;
 			}
-			else if (Mathf.Abs(x) != Mathf.Abs(y)) //invalid coordinates
+			else if (Math.Abs(x) != Math.Abs(y)) //invalid coordinates
 			{
 				return Zero;
 			}
@@ -50,9 +50,8 @@ public struct Coordinates
 			{
 				return LeftDown;
 			}
-			else
+			else //didn't mathch any conditions (should never happen)
 			{
-				Debug.Log("Didn't math any conditions " + this);
 				return Zero;
 			}
 		}

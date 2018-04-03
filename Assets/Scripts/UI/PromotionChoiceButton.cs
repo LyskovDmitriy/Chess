@@ -8,6 +8,6 @@ public class PromotionChoiceButton : MonoBehaviour
 
 	public void Promote()
 	{
-		PiecePromoter.Instance.Promote(promotionType);
+		PawnPromoter.Instance.Promote(promotionType);
 	}
 }

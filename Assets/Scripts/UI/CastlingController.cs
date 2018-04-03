@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CastlingController : MonoBehaviour 
 {
@@ -8,7 +7,7 @@ public class CastlingController : MonoBehaviour
 	private RookBehavior leftRook;
 	private RookBehavior rightRook;
 	private AttackMap enemyAttackMap;
-	private bool castlingIsImpossible = false;
+	private bool castlingIsImpossible;
 
 
 	public void AddPiece(Piece pieceToAdd)
@@ -83,7 +82,7 @@ public class CastlingController : MonoBehaviour
 		{
 			return false;
 		}
-
+		//check if all squares between the king and the rook are empty
 		for (Coordinates coordinatesToCheck = king.Coordinates + directionFromKingToRook;
 			coordinatesToCheck != rook.Coordinates; coordinatesToCheck += directionFromKingToRook)
 		{
@@ -103,5 +102,23 @@ public class CastlingController : MonoBehaviour
 			}
 		}
 		return true;
+	}
+
+
+	private void Awake()
+	{
+		GameController.Instance.onGameRestart += Start;
+	}
+
+
+	private void Start()
+	{
+		castlingIsImpossible = false;
+	}
+
+
+	private void OnDestroy()
+	{
+		GameController.Instance.onGameRestart -= Start;
 	}
 }

@@ -48,10 +48,7 @@ public class CheckBoard : MonoBehaviour
 
 	public Vector3 BoardToWorldCoordinates(int x, int y)
 	{
-		Vector3 cellPosition = startingPosition;
-		cellPosition.x += x;
-		cellPosition.y += y;
-		return cellPosition;
+		return startingPosition + new Vector3(x, y);
 	}
 
 
@@ -79,27 +76,6 @@ public class CheckBoard : MonoBehaviour
 			&& (0 <= y)  && (y < size))
 		{
 			return true;
-		}
-
-		return false;
-	}
-
-
-	public bool IsAtVerticalBorder(PieceColor playerColor, int y)
-	{
-		if (playerColor == PieceColor.White)
-		{
-			if (y == size - 1)
-			{
-				return true;
-			}
-		}
-		else
-		{
-			if (y == 0)
-			{
-				return true;
-			}
 		}
 
 		return false;
@@ -146,7 +122,6 @@ public class CheckBoard : MonoBehaviour
 			{
 				Debug.Log("Trying to unhighlight square that wasn't highlighted " + coord);
 			}
-
 		}
 
 		squaresObjects[coord.x, coord.y].Highlight(highlightType);
@@ -190,6 +165,7 @@ public class CheckBoard : MonoBehaviour
 
 		CreateBoard();
 		GameController.Instance.onTurnEnd += UnhighlightAllSquares;
+		Player.onPlayerDefeated += OnGameOver;
 		highlightedSquares = new List<BoardSquare>();
 	}
 
@@ -204,8 +180,21 @@ public class CheckBoard : MonoBehaviour
 	}
 
 
+	private void OnGameOver(PieceColor? defeatedPlayer)
+	{
+		for (int x = 0; x < size; x++)
+		{
+			for (int y = 0; y < size; y++)
+			{
+				piecesBoard[x, y] = null;
+			}
+		}
+	}
+
+
 	private void OnDestroy()
 	{
 		GameController.Instance.onTurnEnd -= UnhighlightAllSquares;
+		Player.onPlayerDefeated -= OnGameOver;
 	}
 }

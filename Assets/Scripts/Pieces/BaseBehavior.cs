@@ -12,10 +12,10 @@ public class BaseBehavior : MonoBehaviour
 
 
 	protected Piece piece;
-	protected AttackMap FriendlyAttackMap; //to add moves to
-	protected AttackMap EnemyAttackMap; //to check enemy moves
+	protected AttackMap enemyAttackMap; //to check squares that are attacked by enemy
 
 
+	private AttackMap friendlyAttackMap; //to add moves to
 	private CheckBoard checkBoard;
 
 
@@ -72,16 +72,18 @@ public class BaseBehavior : MonoBehaviour
 	}
 
 
-	public void Initialize()
+	public virtual void Initialize()
 	{
-		FriendlyAttackMap = piece.HoldingPlayer.PlayerAttackMap;
-		EnemyAttackMap = piece.HoldingPlayer.EnemyAttackMap;
+		friendlyAttackMap = piece.HoldingPlayer.PlayerAttackMap;
+		enemyAttackMap = piece.HoldingPlayer.EnemyAttackMap;
 	}
 
 
 	protected void AddToAttackMap(Coordinates attackCoordinates)
 	{
-		FriendlyAttackMap.AttackSquare(attackCoordinates, piece, (attackCoordinates - piece.Coordinates).NormalizedDirection);
+		Coordinates attackDirection = piece.IsNonLinearAttackType(piece.type) ? 
+			Coordinates.Zero : (attackCoordinates - piece.Coordinates).NormalizedDirection;
+		friendlyAttackMap.AttackSquare(attackCoordinates, piece, attackDirection);
 	}
 
 
@@ -96,16 +98,34 @@ public class BaseBehavior : MonoBehaviour
 
 	protected virtual bool CheckBeforeAddingMoveToAvailable(Coordinates movementCoordinates)
 	{
+		//when the king is in check, all moves that don't cover him up are unavailable
+		if (enemyAttackMap.KingIsChecked)
+		{
+			if (!enemyAttackMap.CanCoverEnemyKing(movementCoordinates))
+			{
+				return false;
+			}
+		}
+
+		return MoveDoesNotUncoverKing(movementCoordinates);
+	}
+
+	//king can't be exposed to check by his player's actions during his turn
+	protected bool MoveDoesNotUncoverKing(Coordinates movementCoordinates)
+	{
 		Coordinates currentCoordinates = piece.Coordinates;
-		if (!EnemyAttackMap[currentCoordinates].isUnderAttack)
+		//if square is not under attack, piece's movement can't uncover the king
+		if (!enemyAttackMap[currentCoordinates].isUnderAttack)
 		{
 			return true;
 		}
-			
-		SquareAttackInfo attackInfo = EnemyAttackMap[currentCoordinates];
+
+		SquareAttackInfo attackInfo = enemyAttackMap[currentCoordinates];
 
 		for (int i = 0; i < attackInfo.attackingPieces.Count; i++)
 		{
+			//pieces with non-linear attack type (pawn, king and knight) always attack particular squares
+			//and obstacles don't change their attack range
 			if (piece.IsNonLinearAttackType(attackInfo.attackingPieces[i].type))
 			{
 				continue;
@@ -116,6 +136,7 @@ public class BaseBehavior : MonoBehaviour
 				{
 					Coordinates attackDirection = attackInfo.attackDirections[i];
 					Coordinates movementDirection = (movementCoordinates - currentCoordinates).NormalizedDirection;
+					//if the piece is covering the king, it can move only along attack direction or in the opposite direction
 					if ((movementDirection == attackDirection) || (movementDirection == -attackDirection))
 					{
 						return true;

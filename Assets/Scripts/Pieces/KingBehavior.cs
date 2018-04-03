@@ -42,21 +42,28 @@ public class KingBehavior : BaseBehavior
 	}
 
 
+	public bool IsInCheck()
+	{
+		return enemyAttackMap[Coordinates].isUnderAttack;
+	}
+
+
 	protected override bool CheckBeforeAddingMoveToAvailable(Coordinates movementCoordinates)
 	{
-		if (EnemyAttackMap[movementCoordinates].isUnderAttack)
+		//king can't enter squares under attack
+		if (enemyAttackMap[movementCoordinates].isUnderAttack)
 		{
 			return false;
 		}
 
 		Coordinates currentCoordinates = piece.Coordinates;
-		//square is not under attack won't be after movement
-		if (!EnemyAttackMap[currentCoordinates].isUnderAttack)
+		//current square is not under attack, the square the king is trying to enter can't be after movement too
+		if (!enemyAttackMap[currentCoordinates].isUnderAttack)
 		{
 			return true;
 		}
 		//square is not under attack but can be after movement
-		SquareAttackInfo squareAttack = EnemyAttackMap[currentCoordinates];
+		SquareAttackInfo squareAttack = enemyAttackMap[currentCoordinates];
 
 		for (int i = 0; i < squareAttack.attackDirections.Count; i++)
 		{
@@ -72,6 +79,7 @@ public class KingBehavior : BaseBehavior
 			else
 			{
 				Coordinates movementDirection = (movementCoordinates - piece.Coordinates).NormalizedDirection;
+				//king can't move along the attack direction
 				if (squareAttack.attackDirections[i] == movementDirection)
 				{
 					return false;

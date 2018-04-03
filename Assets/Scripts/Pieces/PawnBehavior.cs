@@ -5,127 +5,55 @@ public class PawnBehavior : BaseBehavior
 {
 
 	public bool MovedTwoSquaresLastTurn { get; private set; }
+	public bool HasMoved { get; private set; }
 
 
 	private Coordinates movementDirection;
-	private int startingY;
 	private int lastRowIndex;
-	private bool calculatedMovementData = false;
 
 
 	public override void CalculateAvailableMoves()
 	{
 		base.CalculateAvailableMoves();
 
-		if (!calculatedMovementData)
-		{
-			CalculateMovementData();
-		}
-
 		if (MovedTwoSquaresLastTurn)
 		{
 			MovedTwoSquaresLastTurn = false;
 		}
 			
-		Coordinates currentCoordinates = piece.Coordinates;
-		bool canMoveForward = false;
-		if (SquareIsEmpty(currentCoordinates + movementDirection))
-		{
-			canMoveForward = true;
-			AddToAvailableMoves(currentCoordinates + movementDirection);
-		}
-
-		if (canMoveForward && !HasMoved())
-		{
-			if (SquareIsEmpty(currentCoordinates + movementDirection * 2))
-			{
-				AddToAvailableMoves(currentCoordinates + movementDirection * 2);
-			}
-		} 
-
-		bool canAttackLeft = false;
-		Coordinates attackLeftForward = currentCoordinates + movementDirection + Coordinates.Left;
-		if (CanAttackDiagonally(attackLeftForward))
-		{
-			AddToAvailableMoves(attackLeftForward);
-			canAttackLeft = true;
-		}
-
-		bool canAttackRight = false;
-		Coordinates attackRightForward = currentCoordinates + movementDirection + Coordinates.Right;
-		if (CanAttackDiagonally(attackRightForward))
-		{
-			AddToAvailableMoves(attackRightForward);
-			canAttackRight = true;
-		}
-
-		//en passant
-		if (!canAttackLeft)
-		{
-			Coordinates attackLeft = currentCoordinates + Coordinates.Left;
-
-			if (CanAttackEnPassant(attackLeft))
-			{
-				AddToAvailableMoves(attackLeftForward);
-			}
-		}
-
-		if (!canAttackRight)
-		{
-			Coordinates attackRight = currentCoordinates + Coordinates.Right;
-
-			if (CanAttackEnPassant(attackRight))
-			{
-				AddToAvailableMoves(attackRightForward);
-			}
-		}
+		TryMoveForward();
+		TryAttackInDirection(Coordinates.Left);
+		TryAttackInDirection(Coordinates.Right);
 	} 
 
 
 	public override void CalculateMovesForAttackMap()
 	{
-		Coordinates attackLeftForward = piece.Coordinates + movementDirection + Coordinates.Left;
-		if (SquareIsWithinBoard(attackLeftForward))
-		{
-			AddToAttackMap(attackLeftForward);
-		}
-
-		Coordinates attackRightForward = piece.Coordinates + movementDirection + Coordinates.Right;
-		if (SquareIsWithinBoard(attackRightForward))
-		{
-			AddToAttackMap(attackRightForward);
-		}
+		AddMoveToAttackMapIfValid(Coordinates.Left);
+		AddMoveToAttackMapIfValid(Coordinates.Right);
 	}
 
 
 	public override void ReactToMovement(Coordinates newCoordinates)
 	{
-		//if the piece moves diagonally, it attacks en passant
+		HasMoved = true;
+		//if the piece moves diagonally, it may be attacking en passant
 		Coordinates currentCoordinates = piece.Coordinates;
 		if ((currentCoordinates.x != newCoordinates.x) && (currentCoordinates.y != newCoordinates.y))
 		{
-			Coordinates leftAttack = currentCoordinates + Coordinates.Left;
-			if (CanAttackEnPassant(leftAttack))
-			{
-				CheckBoard.Instance[leftAttack].Remove();
-			}
-
-			Coordinates rightAttack = currentCoordinates + Coordinates.Right;
-			if (CanAttackEnPassant(rightAttack))
-			{
-				CheckBoard.Instance[rightAttack].Remove();
-			}
+			RemoveEnemyPawnIfAttackedEnPassant(Coordinates.Left);
+			RemoveEnemyPawnIfAttackedEnPassant(Coordinates.Right);
 		}
 
-		int movementDistance = Mathf.Abs((currentCoordinates.y - newCoordinates.y));
+		int movementDistance = Mathf.Abs((newCoordinates.y - currentCoordinates.y));
 		if (movementDistance == 2)
 		{
 			MovedTwoSquaresLastTurn = true;
 		}
-
+		//pawn must be promoted if it reached last row
 		if (newCoordinates.y == lastRowIndex)
 		{
-			PiecePromoter.Instance.RequestPromotion(piece.HoldingPlayer, newCoordinates);
+			PawnPromoter.Instance.RequestPromotion(piece.HoldingPlayer, newCoordinates);
 			piece.Remove();
 		}
 	}
@@ -135,20 +63,68 @@ public class PawnBehavior : BaseBehavior
 	{
 		for (int i = 0; i < availableMoves.Count; i++)
 		{
-			if (SquareIsEmpty(availableMoves[i]))
+			if (piece.Coordinates.x != availableMoves[i].x)
 			{
-				if ((piece.Coordinates.x != availableMoves[i].x) && (piece.Coordinates.y != availableMoves[i].y))
-				{
-					CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanAttack);
-				}
-				else
-				{
-					CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanMove);
-				}
+				CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanAttack);
 			}
 			else
 			{
-				CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanAttack);
+				CheckBoard.Instance.HighlightSquare(availableMoves[i], SquareHighlightType.CanMove);
+			}
+		}
+	}		
+
+
+	public override void Initialize()
+	{
+		base.Initialize();
+
+		HasMoved = false;
+		if (piece.HoldingPlayer.Color == PieceColor.White)
+		{
+			movementDirection = Coordinates.Up;
+			lastRowIndex = 7;
+		}
+		else
+		{
+			movementDirection = Coordinates.Down;
+			lastRowIndex = 0;
+		}
+	}
+
+
+	private void TryMoveForward()
+	{
+		Coordinates currentCoordinates = piece.Coordinates;
+
+		if (SquareIsEmpty(currentCoordinates + movementDirection))
+		{
+			AddToAvailableMoves(currentCoordinates + movementDirection);
+
+			if (!HasMoved)
+			{
+				if (SquareIsEmpty(currentCoordinates + movementDirection * 2))
+				{
+					AddToAvailableMoves(currentCoordinates + movementDirection * 2);
+				}
+			}
+		}
+	}
+
+
+	private void TryAttackInDirection(Coordinates attackDirection)
+	{
+		Coordinates attackForwardInDirection = piece.Coordinates + movementDirection + attackDirection;
+		if (CanAttackDiagonally(attackForwardInDirection))
+		{
+			AddToAvailableMoves(attackForwardInDirection);
+		}
+		else //try attack en passant
+		{
+			Coordinates possiblePawnPosition = piece.Coordinates + attackDirection;
+			if (CanAttackEnPassant(possiblePawnPosition))
+			{
+				AddToAvailableMoves(attackForwardInDirection);
 			}
 		}
 	}
@@ -168,13 +144,22 @@ public class PawnBehavior : BaseBehavior
 	}
 
 
+	private void AddMoveToAttackMapIfValid(Coordinates attackDirection)
+	{
+		Coordinates attackForwardInDirection = piece.Coordinates + movementDirection + attackDirection;
+		if (SquareIsWithinBoard(attackForwardInDirection))
+		{
+			AddToAttackMap(attackForwardInDirection);
+		}
+	}
+
+
 	private bool CanAttackEnPassant(Coordinates possiblePawnPosition)
 	{
 		if (SquareIsWithinBoard(possiblePawnPosition) && !SquareIsEmpty(possiblePawnPosition))
 		{
 			Piece possibleEnemy = CheckBoard.Instance[possiblePawnPosition];
-
-			if (possibleEnemy.IsEnemy(piece) && possibleEnemy.type == PieceType.Pawn)
+			if (possibleEnemy.IsEnemy(piece) && (possibleEnemy.type == PieceType.Pawn))
 			{
 				if (possibleEnemy.GetComponent<PawnBehavior>().MovedTwoSquaresLastTurn)
 				{
@@ -187,26 +172,12 @@ public class PawnBehavior : BaseBehavior
 	}
 
 
-	private void CalculateMovementData()
+	private void RemoveEnemyPawnIfAttackedEnPassant(Coordinates possiblePawnDirection)
 	{
-		movementDirection = (piece.HoldingPlayer.Color == PieceColor.White) ? Coordinates.Up : Coordinates.Down;
-		if (piece.HoldingPlayer.Color == PieceColor.White)
+		Coordinates enemyPawnPosition = piece.Coordinates + possiblePawnDirection;
+		if (CanAttackEnPassant(enemyPawnPosition))
 		{
-			startingY = 1;
-			lastRowIndex = 7;
+			CheckBoard.Instance[enemyPawnPosition].Remove();
 		}
-		else
-		{
-			startingY = 6;
-			lastRowIndex = 0;
-		}
-
-		calculatedMovementData = true;
-	}
-
-
-	private bool HasMoved()
-	{
-		return piece.Coordinates.y != startingY;
 	}
 }

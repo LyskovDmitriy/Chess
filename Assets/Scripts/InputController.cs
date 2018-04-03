@@ -12,6 +12,8 @@ public class InputController : MonoBehaviour
 	{
 		mainCamera = Camera.main;
 		GameController.Instance.onTurnEnd += OnTurnEnd;
+		GameController.Instance.onGameRestart += OnGameRestart;
+		Player.onPlayerDefeated += OnGameOver;
 		#if UNITY_ANDROID
 		Input.multiTouchEnabled = false;
 		Input.simulateMouseWithTouches = false;
@@ -62,7 +64,6 @@ public class InputController : MonoBehaviour
 	private void Case_NoHighlightedPiece(Coordinates inputCoordinates)
 	{
 		Piece selectedPiece = CheckBoard.Instance[inputCoordinates];
-
 		if ((selectedPiece != null) && selectedPiece.HoldingPlayer.MovesInCurrentTurn() && selectedPiece.IsInteractive())
 		{
 			HighlightPiece(selectedPiece);
@@ -136,6 +137,18 @@ public class InputController : MonoBehaviour
 	}
 
 
+	private void OnGameOver(PieceColor? defeatedPlayer)
+	{
+		enabled = false;
+	}
+
+
+	private void OnGameRestart()
+	{
+		enabled = true;
+	}
+
+
 	private Coordinates? GetCoordinatesAtScreenInput(Vector3 screenInputPosition)
 	{
 		Vector3 screenPosition = screenInputPosition;
@@ -148,5 +161,7 @@ public class InputController : MonoBehaviour
 	private void OnDestroy()
 	{
 		GameController.Instance.onTurnEnd -= OnTurnEnd;
+		GameController.Instance.onGameRestart -= OnGameRestart;
+		Player.onPlayerDefeated -= OnGameOver;
 	}
 }

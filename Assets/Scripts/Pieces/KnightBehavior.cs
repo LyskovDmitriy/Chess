@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 public class KnightBehavior : BaseBehavior 
@@ -9,47 +8,37 @@ public class KnightBehavior : BaseBehavior
 	{
 		base.CalculateAvailableMoves();
 
-		CalculateAvailableMoves(SquareIsEmptyOrOccupiedByEnemy, AddToAvailableMoves);
+		CalculateMoves(SquareIsEmptyOrOccupiedByEnemy, AddToAvailableMoves);
 	}
 
 
 	public override void CalculateMovesForAttackMap()
 	{
-		CalculateAvailableMoves(SquareIsWithinBoard, AddToAttackMap);
+		CalculateMoves(SquareIsWithinBoard, AddToAttackMap);
 	}
 
 
-	private void CalculateAvailableMoves(Func<Coordinates, bool> squareCheckBeforeAdding, Action<Coordinates> addMove)
+	private void CalculateMoves(Func<Coordinates, bool> squareCheckBeforeAdding, Action<Coordinates> addMove)
 	{
 		Coordinates currentCoordinates = piece.Coordinates;
 
-		for (int deltaX = -2; deltaX < 3; deltaX++)
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(-1, 2), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(1, 2), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(-2, 1), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(2, 1), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(-2, -1), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(2, -1), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(-1, -2), squareCheckBeforeAdding, addMove);
+		AddToMovesIfValidCoordinates(currentCoordinates + new Coordinates(1, -2), squareCheckBeforeAdding, addMove);
+	}
+
+
+	private void AddToMovesIfValidCoordinates(Coordinates movementCoordinates, 
+		Func<Coordinates, bool> squareCheckBeforeAdding, Action<Coordinates> addMove)
+	{
+		if (squareCheckBeforeAdding(movementCoordinates))
 		{
-			if (deltaX == 0)
-			{
-				continue;
-			}
-
-			for (int deltaY = -2; deltaY < 3; deltaY++)
-			{
-				if (deltaY == 0)
-				{
-					continue;
-				}
-
-				int absDeltaX = Mathf.Abs(deltaX);
-				int absDeltaY = Mathf.Abs(deltaY);
-
-				if (((absDeltaX == 2) && (absDeltaY == 1)) 
-					|| ((absDeltaX == 1) && (absDeltaY == 2)))
-				{
-					Coordinates movementCoordinates = currentCoordinates + new Coordinates(deltaX, deltaY);
-					if (squareCheckBeforeAdding(movementCoordinates))
-					{
-						addMove(movementCoordinates);
-					}
-				}
-			}
+			addMove(movementCoordinates);
 		}
 	}
 }
